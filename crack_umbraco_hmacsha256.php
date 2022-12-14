@@ -2,10 +2,10 @@
 // script by cyclone to check plaintexts against Umbraco HMACSHA256 hashes
 // while slow, script supports multi-gigabyte wordlists
 // coding this in php was an experiment, so don't cry about how slow it runs
-// $hash_file must be formatted as: "salt==:hash=" (without quotes)
-// requires php & php-mbstring to be installed (sudo apt install php8.2 php8.2-php-mbstring -y)
+// $hash_file must be formatted as: "salt==:hash=" (without quotes), sanity check will skip hashes which don't contain ":"
+// requires php & php-mbstring to be installed (ex: sudo apt install php8.2 php8.2-php-mbstring -y)
 // tested with php7.4 & php8.2
-// version 2022-12-10.1500
+// version 2022-12-14.1200
 
 echo "\e[H\e[J"; // clear screen
 $t=time(); // define time
@@ -49,27 +49,31 @@ if ($file = fopen($wordlist, "r")) {
         $line_pass_utf16le = mb_convert_encoding($line, "UTF-16LE"); // convert $line to UTF-16LE
         $count_lines++; // count lines processed
         foreach($hash_file as $hash_line) {
-            $hash_array = preg_split("/\:/", $hash_line); // split $hash_file into salt / hash arrays
-            $salt_split = trim($hash_array[0]); // salt array
-            $hash_split = trim($hash_array[1]); // hash array
-            $input = $salt_split . $hash_split; // $input salt/hash for comparison with $output
-            $salt_proper = base64_decode($salt_split) . base64_decode($salt_split) . base64_decode($salt_split) . base64_decode($salt_split); // process salt
-            $dgst = hash_hmac("sha256", $line_pass_utf16le, $salt_proper, true); // hmac256
-            $output = $salt_split . base64_encode($dgst); // compare $output with $imput to see if we've cracked the hash with $line (password)
-            if (time()-$time >= 60) { // show words / percentage searched every 60 seconds
-                $percent = ($count_lines / $lines) * 100;
-                echo "\nProgress: " . $count_lines . " of " . $lines . ", " . number_format((float)$percent, 2, '.', '') . "%" . ", Hashes found: " . $count;
-                $time = time();
-            }
-            if ($output == $input){ // display cracked hashes
-                echo "\n##################################################################################\n";
-                echo "Password: $line\n";
-                echo "salt==hash: ";
-                echo $salt_split . ":" . base64_encode($dgst);
-                echo "\n";
-                $count++; // count +1 hashes found
-                echo "\nHashes found: " . $count;
-                echo "\n##################################################################################\n";
+            if (strpos($hash_line, ':') === false) {
+                continue 1;
+            } else {
+                $hash_array = preg_split("/\:/", $hash_line); // split $hash_file into salt / hash arrays
+                $salt_split = trim($hash_array[0]); // salt array
+                $hash_split = trim($hash_array[1]); // hash array
+                $input = $salt_split . $hash_split; // $input salt/hash for comparison with $output
+                $salt_proper = base64_decode($salt_split) . base64_decode($salt_split) . base64_decode($salt_split) . base64_decode($salt_split); // process salt
+                $dgst = hash_hmac("sha256", $line_pass_utf16le, $salt_proper, true); // hmac256
+                $output = $salt_split . base64_encode($dgst); // compare $output with $input to see if we've cracked the hash with $line (password)
+                if (time()-$time >= 60) { // show words / percentage searched every 60 seconds
+                    $percent = ($count_lines / $lines) * 100;
+                    echo "\nProgress: " . $count_lines . " of " . $lines . ", " . number_format((float)$percent, 2, '.', '') . "%" . ", Hashes found: " . $count;
+                    $time = time();
+                }
+                if ($output == $input){ // display cracked hashes
+                    echo "\n##################################################################################\n";
+                    echo "Password: $line\n";
+                    echo "salt==hash: ";
+                    echo $salt_split . ":" . base64_encode($dgst);
+                    echo "\n";
+                    $count++; // count +1 hashes found
+                    echo "\nHashes found: " . $count;
+                    echo "\n##################################################################################\n";
+                }
             }
         }
     }
