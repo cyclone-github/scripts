@@ -2,7 +2,7 @@
 
 # script to x-compile go binaries for linux / windows / mac
 # written by cyclone
-version="v1.1.1; 2023.1.9-1500"
+version="v1.1.2; 2023.3.3-1930"
 
 clear
 
@@ -15,14 +15,14 @@ if ! command -v upx &> /dev/null
 then
     echo "upx needs to be installed"
     echo "use apt install upx -y to install"
-    break
+    exit
 fi
 # go
 if ! command -v go version &> /dev/null
 then
     echo "go needs to be installed"
     echo "https://go.dev/doc/install"
-    break
+    exit
 fi
 
 #############################
