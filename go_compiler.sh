@@ -2,7 +2,7 @@
 
 # script to x-compile go binaries for linux / windows / mac
 # written by cyclone
-version="v1.1.2; 2023.3.3-1930"
+version="v1.3.4; 2023.4.27-1115"
 
 clear
 
@@ -15,14 +15,14 @@ if ! command -v upx &> /dev/null
 then
     echo "upx needs to be installed"
     echo "use apt install upx -y to install"
-    exit
+    break
 fi
 # go
 if ! command -v go version &> /dev/null
 then
     echo "go needs to be installed"
     echo "https://go.dev/doc/install"
-    exit
+    break
 fi
 
 #############################
@@ -74,12 +74,24 @@ while true; do
     break
 done
 
+# compile using gccgo for linux
+while true; do
+    break # don't compile with gccgo
+    echo "Compiling $app\_gccgo.bin for Linux x64..."
+    go build -compiler gccgo -o bin/$app\_gccgo.bin $app.go &> /dev/null && echo "Ok" || echo "Failed"
+    strip bin/$app\_gccgo.bin
+    echo "Compressing $app_gccgo.bin..."
+    upx bin/$app\_gccgo.bin &>/dev/null && echo "Ok" || echo "Failed"
+    break
+done
+
 # compile go package for linux
 while true; do
     echo "Compiling $app.bin for Linux x64..."
     GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/$app.bin $app.go &> /dev/null && echo "Ok" || echo "Failed"
+    strip bin/$app.bin
     echo "Compressing $app.bin..."
-    upx --brute bin/$app.bin &>/dev/null && echo "Ok" || echo "Failed"
+    upx bin/$app.bin &>/dev/null && echo "Ok" || echo "Failed"
     break
 done
 
@@ -87,8 +99,9 @@ done
 while true; do
     echo "Compiling $app.exe for Windows x64..."
     GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o bin/$app.exe $app.go &>/dev/null && echo "Ok" || echo "Failed"
+    strip bin/$app.exe
     echo "Compressing $app.exe..."
-    upx --brute bin/$app.exe &>/dev/null && echo "Ok" || echo "Failed"
+    upx bin/$app.exe &>/dev/null && echo "Ok" || echo "Failed"
     break
 done
 
@@ -96,8 +109,9 @@ done
 while true; do
     echo "Compiling $app-darwin for Mac x64..."
     GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o bin/$app-darwin $app.go &>/dev/null && echo "Ok" || echo "Failed"
+    strip bin/$app-darwin
     echo "Compressing $app-darwin..."
-    upx --brute bin/$app-darwin &>/dev/null && echo "Ok" || echo "Failed"
+    upx bin/$app-darwin &>/dev/null && echo "Ok" || echo "Failed"
     break
 done
 
