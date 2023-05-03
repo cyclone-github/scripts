@@ -3,7 +3,7 @@
 # script to install golang on debian linux
 # written by cyclone
 
-goBinary="go1.20.3.linux-amd64.tar.gz" # <--- edit to latest go binary you wish to install
+goBinary="go1.20.4.linux-amd64.tar.gz" # <--- edit to latest go binary you wish to install
 url="https://go.dev/dl/"
 
 # download golang binary
