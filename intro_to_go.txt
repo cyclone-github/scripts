@@ -4,7 +4,7 @@ Let's assume you know what Go is and why you want to use it.
 1. Install Go
 If using Linux, simply run my Go install script:
 https://github.com/cyclone-github/scripts/blob/main/install_golang.sh
-If using Windows, or you want to manually install Go, follow the official directions here:
+If you want to manually install Go on Linux / Windows / Mac, follow the official directions here:
 https://go.dev/doc/install
 Confirm Go is working by running "go version" from terminal / cmd.
 
@@ -13,7 +13,10 @@ Run these commands from terminal / cmd from the directory that contains your *.g
 If “main.go” is your source code file:
 go mod init main.go
 go mod tidy
+For single *.go file:
 go run main.go
+For multiple *.go files:
+go run .
 
 3. Compile Go Source Code
 If using Linux, you can use my shell script to download dependencies and x-compile source code for Linux, Windows or Mac.
@@ -23,10 +26,15 @@ To manually compile Go source code, run these commands from terminal / cmd from 
 If “main.go” is your source code file:
 go mod init main.go
 go mod tidy
+For single *.go file:
 go build main.go
+For multiple *.go files:
+go build .
 >or<
 go build -ldflags="-s -w" main.go (-ldflags="-s -w" omits symbol table and debug information, making the binary smaller)
+go build -ldflags="-s -w" . <--- for multi-source file program
 On linux, I like to run strip to remove debug info & upx to compress the binary. My shell script above automatically does this, but you can run these commands manually as well.
 If “main.bin” is your binary file:
 strip main.bin
 upx main.bin
+Note: compressing binaries with upx can cause false possitives on some anti-virus programs, especially on Windows (exe) binaries.
