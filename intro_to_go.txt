@@ -2,8 +2,8 @@
 Let's assume you know what Go is and why you want to use it.
 
 1. Install Go
-If using Linux, simply run my Go install script:
-https://github.com/cyclone-github/scripts/blob/main/install_golang.sh
+If using Linux, simply run my Go install script (works on amd/arm 32/64 bit *nix):
+https://github.com/cyclone-github/scripts/blob/main/install_go.sh
 If you want to manually install Go on Linux / Windows / Mac, follow the official directions here:
 https://go.dev/doc/install
 Confirm Go is working by running "go version" from terminal / cmd.
