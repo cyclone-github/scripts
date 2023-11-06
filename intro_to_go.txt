@@ -37,4 +37,5 @@ On linux, I like to run strip to remove debug info & upx to compress the binary.
 If “main.bin” is your binary file:
 strip main.bin
 upx main.bin
-Note: compressing binaries with upx can cause false possitives on some anti-virus programs, especially on Windows (exe) binaries.
+Note: compressing Go binaries with upx can cause false positives on some anti-virus programs, especially on Windows (exe) binaries.
+More info on false positives with Go binaries: https://go.dev/doc/faq#virus
