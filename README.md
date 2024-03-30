@@ -1,2 +1,2 @@
 # scripts
-A few scripts by cyclone
+Various scripts by cyclone
