@@ -7,6 +7,7 @@
 # v2024-01-17; add support for Debian 11 & 12
 # v2024-03-04; sanity checks, remove old cuda-keyring
 # v2024-06-27; clean up script, post to github
+# v2024-12-10; script no longer works on Proxmox 8.x (Debian 12) due to incompatible dependencies
 
 # Check if root
 if [ "$EUID" -ne 0 ]; then
@@ -37,15 +38,28 @@ else
     esac
 fi
 
+# Get Proxmox version
+VERSION=$(pveversion)
+
+if [[ $VERSION == pve-manager/7.* ]]; then
+    echo "Proxmox version detected $VERSION: OK"
+else
+    echo "Unsupported Proxmox $VERSION version, exiting..."
+    exit 1
+fi 
+
 cat <<EOF
 
-#################################################################
-Script will install nvidia-cuda-toolkit on Proxmox (Debian)
+##################################################################
+Script will install nvidia-cuda-toolkit on Proxmox 7.x (Debian 11)
+
+    --> Script no longer works on Proxmox 8.x (Debian 12) <--   
+            --> due to incompatible dependencies <--            
 
 --> This will remove all existing *cuda and *nvidia packages <--
 
 Press any key to continue, or ctrl+c to cancel...
-#################################################################
+##################################################################
 
 EOF
 read
@@ -79,15 +93,16 @@ update-initramfs -u &> /dev/null && echo "Ok" || echo "Failed"
 
 # Remove old cuda-keyring downloads
 echo "Removing old cuda-keyring downloads..."
-rm cuda-keyring_1.* &> /dev/null && echo "Ok"
+rm /var/lib/apt/lists/*cuda* /var/lib/apt/lists/*nvidia* cuda-keyring_1.* &> /dev/null && echo "Ok"
 
 # Remove existing cuda and nvidia
 echo "Removing previously installed nvidia & cuda programs..."
-apt autoremove --purge cuda* nvidia* -y &> /dev/null && echo "Ok" || echo "Failed"
+[ -x /usr/bin/nvidia-uninstall ] && /usr/bin/nvidia-uninstall
+apt autoremove --purge "cuda*" "nvidia*" "libxnvctrl*" "libnvidia-*" -y &> /dev/null && echo "Ok" || echo "Failed"
 
 # User options for cuda-keyring installation
 echo "Select the cuda-keyring version to install:"
-echo "1. Install cuda-keyring v1.1.1 for Debian 12"
+echo "1. Install cuda-keyring v1.1.1 for Debian 12 (No longer works on Proxmox 8.x due to incompatible dependencies)"
 echo "2. Install cuda-keyring v1.1.1 for Debian 11"
 echo "3. Install cuda-keyring v1.0.1 for Debian 11"
 read -p "Enter your choice (1, 2, or 3): " choice
