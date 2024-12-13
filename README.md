@@ -2,6 +2,7 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/cyclone-github/scripts.svg)](https://github.com/cyclone-github/scripts/issues)
 [![License](https://img.shields.io/github/license/cyclone-github/scripts.svg)](LICENSE)
+![Languages](https://img.shields.io/github/languages/count/cyclone-github/scripts)
 
 # scripts
 Various scripts by cyclone
