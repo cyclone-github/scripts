@@ -8,7 +8,7 @@
 # v2024-03-04; sanity checks, remove old cuda-keyring
 # v2024-06-27; clean up script, post to github
 # v2024-12-10; script no longer works on Proxmox 8.x (Debian 12) due to incompatible dependencies
-# v2025-03-08; recommend using https://github.com/cyclone-github/scripts/blob/main/install_cuda.sh
+# v2025-03-08; recommend using https://github.com/cyclone-github/scripts/blob/main/install_cuda.py
 
 # Check if root
 if [ "$EUID" -ne 0 ]; then
